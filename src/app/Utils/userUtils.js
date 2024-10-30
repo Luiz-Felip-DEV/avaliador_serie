@@ -1,3 +1,5 @@
+import argon from 'argon2';
+import userRepository from '../Repository/userRepository.js';
 
 class userUtils {
 
@@ -16,33 +18,6 @@ class userUtils {
     
         return arrNome.join(' ');
     }
-    /**
-     * 
-     * @param {*} cpf 
-     * formata um cpf
-     * @returns 
-     */
-
-    // formatarCpf(cpf)
-    // {
-    //     const cpfLimpo = cpf.replace(/\D/g, '');
-
-    //     const regex = /^(\d{3})(\d{3})(\d{3})(\d{2})$/;
-    //     return cpfLimpo.replace(regex, '$1.$2.$3-$4');
-    // }
-
-    /**
-     * 
-     * @param {*} telefone 
-     * formata um numero de telefone
-     * @returns 
-     */
-    // async formatarTelefone(telefone) {
-    //     const telefoneLimpo = telefone.replace(/\D/g, '');
-
-    //     const regex = /^(\d{2})(\d{5})(\d{4})$/;
-    //     return telefoneLimpo.replace(regex, '($1) $2-$3');
-    // }
 
     /**
      * 
@@ -56,63 +31,43 @@ class userUtils {
         return emailRegex.test(email);
     }
 
-    // async retornarArrayFormatado(dados)
-    // {
-    //     const fullName  = (dados.full_name) ? await this.formatarNome(dados.full_name) : '';
-    //     const email     = dados.email;
-    //     const password  = await argon.hash(dados.password);
+    async formataData (data) {
 
-    //     const arrDados = {full_name: fullName, email: email, password: password};
+        const dataString = data;
+        const [dia, mes, ano] = dataString.split('/');
 
-    //     return arrDados;
-    // }
+        const dataFormatada = `${ano}-${mes}-${dia}`
+
+        return dataFormatada;
+    }
+
+    async retornarArrayFormatado(dados)
+    {
+        const nick      = dados.nome_usuario;
+        const email     = dados.email;
+        const password  = await argon.hash(dados.password);
+        const birthDate = await this.formataData(dados.birth_date);
+
+        const arrDados = {nick: nick, email: email, password: password, birth_date: birthDate};
+
+        return arrDados;
+    }
     
-    // async RepeatedCPF(cpf)
-    //   {
-    //         const cpfF = this.formatarCpf(cpf);
-    //         let verify = false;
+      async RepeatedEmail(email)
+      {
+            let verify = false;
 
-    //         try {
-    //             const arrDados = await utilRepository.verifyCPF(cpfF);
-    //             verify         = (arrDados[0]) ? true : false;
-    //         } catch(error) {
-    //             return false;
-    //         }
+            try {
 
-    //         return verify;
-    //   }
+                const arrDados = await userRepository.verifyEmail(email);
+                verify         = (arrDados[0]) ? true : false;
 
-    //   async RepeatedPhone(telefone)
-    //   {
-    //         const telefoneF = await this.formatarTelefone(telefone);
-    //         let verify      = false;
+            } catch(error) {
+                return false;
+            }
 
-    //         try {
-    //             const arrDados = await utilRepository.verifyTelephone(telefoneF);
-    //             verify         = (arrDados[0]) ? true : false;
-
-    //         } catch(error) {
-    //             return false;
-    //         }
-
-    //         return verify;
-    //   }
-
-    //   async RepeatedEmail(email)
-    //   {
-    //         let verify = false;
-
-    //         try {
-
-    //             const arrDados = await utilRepository.verifyEmail(email);
-    //             verify         = (arrDados[0]) ? true : false;
-
-    //         } catch(error) {
-    //             return false;
-    //         }
-
-    //         return verify;
-    //   }
+            return verify;
+      }
 }
 
 export default new userUtils();
