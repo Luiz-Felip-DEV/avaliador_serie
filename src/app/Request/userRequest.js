@@ -48,6 +48,37 @@ class userRequest {
 
         next();
     }
+
+    async postLogin(req, res, next)
+    {
+        let msg = '';
+
+        if (!req.body.password) {
+            msg = 'Parametro password é obrigatorio.';
+        }
+
+        if (!req.body.email) {
+            msg = 'Parametro email é obrigatorio.';
+        }
+
+        if(msg) {
+            return res.status(400).json({
+                error: true,
+                msgUser: msg,
+                msgOriginal: msg
+            });
+        }
+
+        if (!userUtils.emailValido(req.body.email)) {
+            return res.status(400).json({
+                error: true,
+                msgUser: 'Email inválido, informe um email valido',
+                msgOriginal: 'Email inválido, informe um email valido'
+            });
+        }
+
+        next();
+    }
 }
 
 export default new userRequest();

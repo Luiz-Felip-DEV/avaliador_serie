@@ -46,9 +46,9 @@ class userUtils {
         const nick      = dados.nome_usuario;
         const email     = dados.email;
         const password  = await argon.hash(dados.password);
-        const birthDate = await this.formataData(dados.birth_date);
+        // const birthDate = await this.formataData(dados.birth_date);
 
-        const arrDados = {nick: nick, email: email, password: password, birth_date: birthDate};
+        const arrDados = {nick: nick, email: email, password: password, birth_date: dados.birth_date};
 
         return arrDados;
     }
